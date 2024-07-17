@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: mc-dialog
+
+  jpa:
+    generate-ddl: true
+    open-in-view: true
+  datasource:
+    url: jdbc:postgresql://localhost:5435/dialogsDB
+    username: postgres
+    password: postgres
+    hikari:
+      schema: dialogs
+      connection-init-sql: create schema if not exists dialogs
+      connection-timeout: 10000
+
+  liquibase:
+    enabled: false
+
+server:
+  port: 8088
