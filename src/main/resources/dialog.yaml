@@ -1,0 +1,593 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Microservice dialog",
+    "version": "1.0.0-SNAPSHOT",
+    "description": "Сервис диалогов"
+  },
+  "servers": [
+    {
+      "url": "http://ingress",
+      "description": "Generated server url"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Dialog service",
+      "description": "Работа с диалогами"
+    }
+  ],
+  "paths": {
+    "/api/v1/dialogs/{dialogId}": {
+      "put": {
+        "tags": [
+          "Dialog service"
+        ],
+        "description": "Обновление статуса сообщений",
+        "operationId": "updateReadStatus",
+        "parameters": [
+          {
+            "name": "dialogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/v1/dialogs/createMessage": {
+      "post": {
+        "tags": [
+          "Dialog service"
+        ],
+        "description": "Создание сообщения, для тестирования",
+        "operationId": "createMessage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/v1/dialogs/createDialog": {
+      "post": {
+        "tags": [
+          "Dialog service"
+        ],
+        "description": "Создание диалога, для тестирования",
+        "operationId": "createDialog",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DialogDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DialogDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/v1/dialogs": {
+      "get": {
+        "tags": [
+          "Dialog service"
+        ],
+        "description": "Получение списка диалогов",
+        "operationId": "getDialogs",
+        "parameters": [
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageDialogDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/v1/dialogs/unread": {
+      "get": {
+        "tags": [
+          "Dialog service"
+        ],
+        "description": "Получение количества непрочитанных сообщений",
+        "operationId": "getUnread",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnreadCountDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/v1/dialogs/recipientId/{id}": {
+      "get": {
+        "tags": [
+          "Dialog service"
+        ],
+        "description": "Получение(создание) диалога между пользователями",
+        "operationId": "getDialogByRecipientId",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DialogDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/v1/dialogs/messages": {
+      "get": {
+        "tags": [
+          "Dialog service"
+        ],
+        "description": "Получение сообщений сообщений диалога",
+        "operationId": "getMessages",
+        "parameters": [
+          {
+            "name": "recipientId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageMessageShortDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "MessageDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "isDeleted": {
+            "type": "boolean"
+          },
+          "time": {
+            "type": "string",
+            "description": "Дата и время отправки",
+            "format": "date-time"
+          },
+          "conversationPartner1": {
+            "type": "string",
+            "description": "UUID первого собеседника",
+            "format": "uuid"
+          },
+          "conversationPartner2": {
+            "type": "string",
+            "description": "UUID второго собеседника",
+            "format": "uuid"
+          },
+          "messageText": {
+            "type": "string",
+            "description": "Текст сообщения"
+          },
+          "readStatus": {
+            "type": "string",
+            "description": "Статус прочтения: SENT, READ - отправлен, прочитан"
+          },
+          "dialogId": {
+            "type": "string",
+            "description": "UUID диалога",
+            "format": "uuid"
+          }
+        },
+        "description": "Dto сообщения"
+      },
+      "DialogDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "isDeleted": {
+            "type": "boolean"
+          },
+          "unreadCount": {
+            "type": "integer",
+            "description": "Количество непрочитанных сообщений диалога",
+            "format": "int32"
+          },
+          "conversationPartner1": {
+            "type": "string",
+            "description": "UUID первого собеседника",
+            "format": "uuid"
+          },
+          "conversationPartner2": {
+            "type": "string",
+            "description": "UUID второго собеседника",
+            "format": "uuid"
+          },
+          "lastMessage": {
+            "type": "array",
+            "description": "Dto последнего сообщения",
+            "items": {
+              "$ref": "#/components/schemas/MessageDto"
+            }
+          }
+        },
+        "description": "Dto диалога"
+      },
+      "Pageable": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "PageDialogDto": {
+        "type": "object",
+        "properties": {
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/Sort"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DialogDto"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PageableObject": {
+        "type": "object",
+        "properties": {
+          "sort": {
+            "$ref": "#/components/schemas/Sort"
+          },
+          "unpaged": {
+            "type": "boolean"
+          },
+          "paged": {
+            "type": "boolean"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "offset": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "Sort": {
+        "type": "object",
+        "properties": {
+          "sorted": {
+            "type": "boolean"
+          },
+          "unsorted": {
+            "type": "boolean"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "UnreadCountDto": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer",
+            "description": "Количество непрочитанных сообщений в диалоге",
+            "format": "int32"
+          }
+        },
+        "description": "Dto количества непрочитанных сообщений"
+      },
+      "MessageShortDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "isDeleted": {
+            "type": "boolean"
+          },
+          "time": {
+            "type": "string",
+            "description": "Дата и время отправки",
+            "format": "date-time"
+          },
+          "conversationPartner1": {
+            "type": "string",
+            "description": "UUID первого собеседника",
+            "format": "uuid"
+          },
+          "conversationPartner2": {
+            "type": "string",
+            "description": "UUID второго собеседника",
+            "format": "uuid"
+          },
+          "messageText": {
+            "type": "string",
+            "description": "Текст сообщения"
+          }
+        },
+        "description": "Dto сообщения краткое"
+      },
+      "PageMessageShortDto": {
+        "type": "object",
+        "properties": {
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/Sort"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessageShortDto"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "JWT": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
