@@ -15,7 +15,8 @@ spring:
       connection-timeout: 10000
 
   liquibase:
-    enabled: false
+    enabled: true
+    change-log: classpath:/db/changelog/db.changelog-master.xml
 
 server:
   port: 8088

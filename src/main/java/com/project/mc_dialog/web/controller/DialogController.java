@@ -1,6 +1,6 @@
-package com.project.mc_dialog.web.controllers;
+package com.project.mc_dialog.web.controller;
 
-import com.project.mc_dialog.services.DialogService;
+import com.project.mc_dialog.service.DialogService;
 import com.project.mc_dialog.web.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
