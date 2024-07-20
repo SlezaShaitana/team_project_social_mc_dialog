@@ -2,6 +2,11 @@ package com.project.mc_dialog.web.controller;
 
 import com.project.mc_dialog.service.DialogService;
 import com.project.mc_dialog.web.dto.*;
+import com.project.mc_dialog.web.dto.dialogDto.DialogDto;
+import com.project.mc_dialog.web.dto.dialogDto.PageDialogDto;
+import com.project.mc_dialog.web.dto.messageDto.MessageDto;
+import com.project.mc_dialog.web.dto.messageDto.PageMessageShortDto;
+import com.project.mc_dialog.web.dto.messageDto.UnreadCountDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

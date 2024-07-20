@@ -1,6 +1,6 @@
 package com.project.mc_dialog.model;
 
-import com.project.mc_dialog.web.dto.ReadStatus;
+import com.project.mc_dialog.web.dto.messageDto.ReadStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

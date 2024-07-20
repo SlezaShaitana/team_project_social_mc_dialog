@@ -1,7 +1,9 @@
-package com.project.mc_dialog.web.dto;
+package com.project.mc_dialog.web.dto.dialogDto;
 
+import com.project.mc_dialog.web.dto.messageDto.MessageDto;
 import lombok.Data;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -17,5 +19,5 @@ public class DialogDto {
 
     private UUID conversationPartner2;
 
-    private MessageDto lastMessage;
+    private List<MessageDto> lastMessage;
 }

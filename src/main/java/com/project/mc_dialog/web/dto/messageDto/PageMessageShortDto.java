@@ -1,9 +1,11 @@
-package com.project.mc_dialog.web.dto;
+package com.project.mc_dialog.web.dto.messageDto;
 
+import com.project.mc_dialog.web.dto.PageableObject;
+import com.project.mc_dialog.web.dto.Sort;
 import lombok.Data;
 
 @Data
-public class PageDialogDto {
+public class PageMessageShortDto {
 
     private Integer totalPages;
 
@@ -21,7 +23,7 @@ public class PageDialogDto {
 
     private Integer size;
 
-    private DialogDto content;
+    private MessageShortDto content;
 
     private Integer number;
 

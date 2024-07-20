@@ -1,6 +1,5 @@
 package com.project.mc_dialog.model;
 
-import com.project.mc_dialog.web.dto.MessageDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

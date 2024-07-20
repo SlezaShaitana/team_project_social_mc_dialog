@@ -3,7 +3,7 @@ spring:
     name: mc-dialog
 
   jpa:
-    generate-ddl: true
+    generate-ddl: false
     open-in-view: true
   datasource:
     url: jdbc:postgresql://localhost:5435/dialogsDB
