@@ -3,6 +3,8 @@ package com.project.mc_dialog.web.dto;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class Pageable {
 
@@ -12,5 +14,5 @@ public class Pageable {
     @Min(value = 1, message = "Значение size должно быть больше или равным 1.")
     private Integer size;
 
-    private String sort;
+    private List<String> sort;
 }
