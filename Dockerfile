@@ -4,7 +4,7 @@ WORKDIR /home/app
 COPY build.gradle.kts settings.gradle.kts gradlew ./
 COPY gradle ./gradle
 COPY src ./src
-RUN ./gradlew build -x test
+RUN sudo ./gradlew build -x test
 
 # Второй этап: создание минимального образа с JRE для запуска приложения
 FROM openjdk:17-jdk-alpine
