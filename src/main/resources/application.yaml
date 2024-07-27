@@ -6,7 +6,7 @@ spring:
     generate-ddl: false
     open-in-view: true
   datasource:
-    url: jdbc:postgresql://localhost:5435/dialogsDB
+    url: jdbc:postgresql://localhost:5435/database
     username: postgres
     password: postgres
     hikari:
