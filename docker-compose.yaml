@@ -12,5 +12,3 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres/database
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
-    depends_on:
-      - postgres
