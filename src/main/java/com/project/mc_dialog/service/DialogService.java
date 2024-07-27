@@ -139,7 +139,12 @@ public class DialogService {
     public DialogDto getDialog(UUID recipientId) {
         log.info("Getting dialog by user {} with user {}", "userTest", recipientId);
         UUID ownerId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
-        return dialogMapper.dialogToDto(getExistingDialog(ownerId, recipientId));
+        Dialog exsitingDialog = getExistingDialog(ownerId, recipientId);
+        if (exsitingDialog != null) {
+            return dialogMapper.dialogToDto(exsitingDialog);
+        }
+        throw new DialogNotFoundException(MessageFormat
+                .format("The dialog between users {0} and {1} not found", ownerId, recipientId));
     }
 
     public PageMessageShortDto getMessages(UUID recipientId, Pageable pageableDto) {
