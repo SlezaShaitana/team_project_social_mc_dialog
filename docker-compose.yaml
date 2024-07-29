@@ -1,6 +1,18 @@
 version: '3'
 
 services:
+
+  postgres:
+    container_name: postgres_db
+    image: postgres:12.3
+    ports:
+      - "5435:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=database
+
+
   mc-dialog:
     container_name: mc-dialog
     image: mc-dialog-image
