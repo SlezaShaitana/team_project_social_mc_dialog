@@ -13,14 +13,14 @@ services:
       - POSTGRES_DB=database
 
 
-  mc-dialog:
-    container_name: mc-dialog
-    image: mc-dialog-image
-    build: .
-    ports:
-      - "8088:8088"
-    environment:
-      - SERVER_PORT=8088
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres/database
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+#  mc-dialog:
+#    container_name: mc-dialog
+#    image: mc-dialog-image
+#    build: .
+#    ports:
+#      - "8088:8088"
+#    environment:
+#      - SERVER_PORT=8088
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres/database
+#      - SPRING_DATASOURCE_USERNAME=postgres
+#      - SPRING_DATASOURCE_PASSWORD=postgres

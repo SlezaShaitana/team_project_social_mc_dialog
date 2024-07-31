@@ -1,5 +1,6 @@
 package com.project.mc_dialog.web.controller;
 
+import com.project.mc_dialog.security.JwtUtils;
 import com.project.mc_dialog.service.DialogService;
 import com.project.mc_dialog.web.dto.*;
 import com.project.mc_dialog.web.dto.dialogDto.DialogDto;
@@ -20,6 +21,8 @@ import java.util.UUID;
 public class DialogController {
 
     private final DialogService dialogService;
+
+    private final JwtUtils jwtUtils;
 
     @PutMapping("/{dialogId}")
     public ResponseEntity<String> updateMessageStatus(@PathVariable UUID dialogId) {
@@ -56,6 +59,18 @@ public class DialogController {
     public ResponseEntity<PageMessageShortDto> getMessages(@RequestParam UUID recipientId,
                                                            @ModelAttribute @Valid Pageable pageable) {
         return ResponseEntity.ok(dialogService.getMessages(recipientId, pageable));
+    }
+
+    @PostMapping("/jwt/{jwt}")
+    public ResponseEntity<String> postJwt(@PathVariable String jwt) {
+        String token = jwtUtils.generateToken(jwt);
+        return ResponseEntity.ok(token);
+    }
+
+    @GetMapping("/jwt/{jwt}")
+    public ResponseEntity<String> getJwt(@PathVariable String jwt) {
+        String id = jwtUtils.getId(jwt);
+        return ResponseEntity.ok(id);
     }
 
 }
