@@ -60,17 +60,4 @@ public class DialogController {
                                                            @ModelAttribute @Valid Pageable pageable) {
         return ResponseEntity.ok(dialogService.getMessages(recipientId, pageable));
     }
-
-    @PostMapping("/jwt/{jwt}")
-    public ResponseEntity<String> postJwt(@PathVariable String jwt) {
-        String token = jwtUtils.generateToken(jwt);
-        return ResponseEntity.ok(token);
-    }
-
-    @GetMapping("/jwt/{jwt}")
-    public ResponseEntity<String> getJwt(@PathVariable String jwt) {
-        String id = jwtUtils.getId(jwt);
-        return ResponseEntity.ok(id);
-    }
-
 }

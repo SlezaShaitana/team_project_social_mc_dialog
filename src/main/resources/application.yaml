@@ -31,5 +31,4 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8888/eureka/
   instance:
-    instance-id: mc-dialog
     hostname: localhost
