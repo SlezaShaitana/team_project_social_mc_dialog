@@ -13,7 +13,7 @@ public class PageMessageShortDto {
 
     private Integer totalPages;
 
-    private Integer totalElements;
+    private Long totalElements;
 
     private Sort sort;
 

@@ -1,4 +1,4 @@
-package com.project.mc_dialog.service;
+package com.project.mc_dialog.config;
 
 import com.project.mc_dialog.security.JwtAuthenticationEntryPoint;
 import com.project.mc_dialog.security.JwtTokenFilter;
