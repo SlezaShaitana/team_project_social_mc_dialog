@@ -10,6 +10,7 @@ import com.project.mc_dialog.web.dto.messageDto.UnreadCountDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -38,24 +39,33 @@ public class DialogController {
     }
 
     @GetMapping
-    public ResponseEntity<PageDialogDto> getDialogs(@ModelAttribute @Valid Pageable pageable) {
-        return ResponseEntity.ok(dialogService.getDialogs(pageable));
+    public ResponseEntity<PageDialogDto> getDialogs(@RequestHeader("Authorization") String headerAuth,
+                                                    @ModelAttribute @Valid Pageable pageable) {
+        return ResponseEntity.ok(dialogService.getDialogs(getToken(headerAuth), pageable));
     }
 
     @GetMapping("/unread")
-    public ResponseEntity<UnreadCountDto> getUnreadMessages() {
-        return ResponseEntity.ok(dialogService.getUnreadCount());
+    public ResponseEntity<UnreadCountDto> getUnreadMessages(@RequestHeader("Authorization") String headerAuth) {
+        return ResponseEntity.ok(dialogService.getUnreadCount(getToken(headerAuth)));
     }
 
     @GetMapping("/recipientId/{id}")
-    public ResponseEntity<DialogDto> getDialog(@PathVariable UUID id) {
-        return ResponseEntity.ok(dialogService.getDialog(id));
+    public ResponseEntity<DialogDto> getDialog(@RequestHeader("Authorization") String headerAuth,
+                                               @PathVariable UUID id) {
+        return ResponseEntity.ok(dialogService.getDialog(getToken(headerAuth), id));
     }
 
     @GetMapping("/messages")
-    public ResponseEntity<PageMessageShortDto> getMessages(@RequestParam UUID recipientId,
+    public ResponseEntity<PageMessageShortDto> getMessages(@RequestHeader("Authorization") String headerAuth,
+                                                           @RequestParam UUID recipientId,
                                                            @ModelAttribute @Valid Pageable pageable) {
-        return ResponseEntity.ok(dialogService.getMessages(recipientId, pageable));
+        return ResponseEntity.ok(dialogService.getMessages(getToken(headerAuth), recipientId, pageable));
     }
 
+    private String getToken(String headerAuth){
+        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+            return headerAuth.substring(7);
+        }
+        return null;
+    }
 }
