@@ -9,10 +9,6 @@ spring:
     url: jdbc:postgresql://localhost:5435/mc_dialog
     username: postgres
     password: postgres
-    hikari:
-      schema: dialogs
-      connection-init-sql: create schema if not exists dialogs
-      connection-timeout: 10000
 
   liquibase:
     enabled: true
