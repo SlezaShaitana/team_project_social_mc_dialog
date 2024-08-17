@@ -6,7 +6,7 @@ spring:
     generate-ddl: false
     open-in-view: true
   datasource:
-    url: jdbc:postgresql://localhost:5435/mc_dialog
+    url: jdbc:postgresql://postgres_db/mc_dialog
     username: postgres
     password: postgres
 
@@ -17,14 +17,10 @@ spring:
 server:
   port: 8088
 
-app:
-  jwt:
-    secret: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-
 eureka:
   client:
     enabled: true
     serviceUrl:
-      defaultZone: http://localhost:8888/eureka/
+      defaultZone: http://mc-eureka-conteiner:8888/eureka/
   instance:
     hostname: localhost

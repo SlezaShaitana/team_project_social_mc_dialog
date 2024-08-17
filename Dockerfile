@@ -7,7 +7,7 @@ WORKDIR /app
 COPY target/mc-dialog-0.0.1-SNAPSHOT.jar myapp.jar
 
 # Открываем порт, на котором будет работать приложение
-EXPOSE 8080
+EXPOSE 8088
 
 # Запускаем приложение
 ENTRYPOINT ["java", "-jar", "myapp.jar"]
