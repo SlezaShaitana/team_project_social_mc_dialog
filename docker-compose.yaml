@@ -4,23 +4,11 @@ services:
 
   postgres:
     container_name: postgres_db
-    image: postgres:12.3
+    image: postgres:latest
     ports:
       - "5435:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=database
+      - POSTGRES_DB=mc_dialog
 
-
-#  mc-dialog:
-#    container_name: mc-dialog
-#    image: mc-dialog-image
-#    build: .
-#    ports:
-#      - "8088:8088"
-#    environment:
-#      - SERVER_PORT=8088
-#      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres/database
-#      - SPRING_DATASOURCE_USERNAME=postgres
-#      - SPRING_DATASOURCE_PASSWORD=postgres
