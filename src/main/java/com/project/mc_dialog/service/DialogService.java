@@ -87,6 +87,24 @@ public class DialogService {
         log.info("Getting user dialogs");
         UUID ownerId = UUID.fromString(jwtUtils.getId(token));
 
+        if (pageableDto.getSize() == null || pageableDto.getPage() == null) {
+            return PageDialogDto.builder()
+                    .totalPages(0)
+                    .totalElements(0L)
+
+                    .numberOfElements(0)
+
+                    .first(true)
+                    .last(false)
+                    .size(0)
+
+                    .number(0)
+                    .empty(true)
+                    .build();
+        }
+
+        log.info("{}, {}, {}", pageableDto.getSize(), pageableDto.getPage(), pageableDto.getSort());
+
         org.springframework.data.domain.Sort sort = SortUtils.getSortFromList(pageableDto.getSort());
         org.springframework.data.domain.Pageable pageable = PageRequest.of(pageableDto.getPage(),
                 pageableDto.getSize(), sort);
@@ -131,9 +149,9 @@ public class DialogService {
     }
 
     public UnreadCountDto getUnreadCount(String token) {
-        log.info("Getting unread count messages by user {}", "testUser");
-
         UUID ownerId = UUID.fromString(jwtUtils.getId(token));
+        log.info("Getting unread count messages by user {}", ownerId);
+
         List<Dialog> userDialogs = dialogRepository.findAllByConversationPartner1(ownerId);
         if (userDialogs.isEmpty()) {
             return new UnreadCountDto(0);
