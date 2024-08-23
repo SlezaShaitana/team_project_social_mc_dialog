@@ -9,6 +9,7 @@ import com.project.mc_dialog.web.dto.messageDto.PageMessageShortDto;
 import com.project.mc_dialog.web.dto.messageDto.UnreadCountDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/dialogs")
 @RequiredArgsConstructor
+@Slf4j
 public class DialogController {
 
     private final DialogService dialogService;
@@ -52,6 +54,7 @@ public class DialogController {
     @GetMapping("/recipientId/{id}")
     public ResponseEntity<DialogDto> getDialog(@RequestHeader("Authorization") String headerAuth,
                                                @PathVariable UUID id) {
+        log.info("Getting dialog by id: {}", id);
         return ResponseEntity.ok(dialogService.getDialog(getToken(headerAuth), id));
     }
 
@@ -59,6 +62,7 @@ public class DialogController {
     public ResponseEntity<PageMessageShortDto> getMessages(@RequestHeader("Authorization") String headerAuth,
                                                            @RequestParam UUID recipientId,
                                                            @ModelAttribute @Valid Pageable pageable) {
+        log.info("Getting messages from dialog id: {}", recipientId);
         return ResponseEntity.ok(dialogService.getMessages(getToken(headerAuth), recipientId, pageable));
     }
 
