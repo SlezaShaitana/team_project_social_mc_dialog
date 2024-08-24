@@ -53,14 +53,14 @@ public class DialogController {
 
     @GetMapping("/recipientId/{id}")
     public ResponseEntity<DialogDto> getDialog(@RequestHeader("Authorization") String headerAuth,
-                                               @PathVariable UUID id) {
+                                               @PathVariable(name = "id") UUID id) {
         log.info("Getting dialog by id: {}", id);
         return ResponseEntity.ok(dialogService.getDialog(getToken(headerAuth), id));
     }
 
     @GetMapping("/messages")
     public ResponseEntity<PageMessageShortDto> getMessages(@RequestHeader("Authorization") String headerAuth,
-                                                           @RequestParam UUID recipientId,
+                                                           @RequestParam(name = "recipientId") UUID recipientId,
                                                            @ModelAttribute @Valid Pageable pageable) {
         log.info("Getting messages from dialog id: {}", recipientId);
         return ResponseEntity.ok(dialogService.getMessages(getToken(headerAuth), recipientId, pageable));
