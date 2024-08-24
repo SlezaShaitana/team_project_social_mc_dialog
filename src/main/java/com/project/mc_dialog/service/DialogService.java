@@ -177,8 +177,18 @@ public class DialogService {
         log.info("Getting messages by user {} with user {}", ownerId, recipientId);
 
         org.springframework.data.domain.Sort sort = SortUtils.getSortFromList(pageableDto.getSort());
-        org.springframework.data.domain.Pageable pageable = PageRequest.of(pageableDto.getPage(),
-                pageableDto.getSize(), sort);
+        org.springframework.data.domain.Pageable pageable;
+
+        if (pageableDto.getSize() != null && pageableDto.getPage() != null) {
+            pageable = PageRequest.of(pageableDto.getPage(),
+                    pageableDto.getSize(), sort);
+        } else {
+            pageable = PageRequest.of(0, 10, sort);
+        }
+
+
+
+
 
         Page<Message> messagePage = messageRepository.findAllByConversationPartner1(ownerId, pageable);
         List<Message> messages = messagePage.getContent();
