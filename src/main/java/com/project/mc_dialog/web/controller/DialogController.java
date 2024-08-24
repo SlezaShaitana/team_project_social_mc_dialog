@@ -25,7 +25,7 @@ public class DialogController {
     private final DialogService dialogService;
 
     @PutMapping("/{dialogId}")
-    public ResponseEntity<String> updateMessageStatus(@PathVariable UUID dialogId) {
+    public ResponseEntity<String> updateMessageStatus(@PathVariable(name = "dialogId") UUID dialogId) {
         dialogService.updateMessageStatus(dialogId);
         return ResponseEntity.ok("Successful operation");
     }
