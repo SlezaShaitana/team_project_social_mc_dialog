@@ -167,9 +167,12 @@ public class DialogService {
         Dialog exsitingDialog = getExistingDialog(ownerId, recipientId);
         if (exsitingDialog != null) {
             return dialogMapper.dialogToDto(exsitingDialog);
+        } else {
+            return createDialog(DialogDto.builder()
+                    .conversationPartner1(ownerId)
+                    .conversationPartner2(recipientId)
+                    .build());
         }
-        throw new DialogNotFoundException(MessageFormat
-                .format("The dialog between users {0} and {1} not found", ownerId, recipientId));
     }
 
     public PageMessageShortDto getMessages(String token, UUID recipientId, Pageable pageableDto) {
@@ -181,9 +184,9 @@ public class DialogService {
 
         if (pageableDto.getSize() != null && pageableDto.getPage() != null) {
             pageable = PageRequest.of(pageableDto.getPage(),
-                    pageableDto.getSize(), sort);
+                    pageableDto.getSize());
         } else {
-            pageable = PageRequest.of(0, 10, sort);
+            pageable = PageRequest.of(0, 10);
         }
 
 
