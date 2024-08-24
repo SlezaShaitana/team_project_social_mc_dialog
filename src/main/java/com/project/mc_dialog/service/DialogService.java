@@ -87,27 +87,11 @@ public class DialogService {
         log.info("Getting user dialogs");
         UUID ownerId = UUID.fromString(jwtUtils.getId(token));
 
-        if (pageableDto.getSize() == null || pageableDto.getPage() == null) {
-            return PageDialogDto.builder()
-                    .totalPages(0)
-                    .totalElements(0L)
-
-                    .numberOfElements(0)
-
-                    .first(true)
-                    .last(false)
-                    .size(0)
-
-                    .number(0)
-                    .empty(true)
-                    .build();
-        }
+        org.springframework.data.domain.Sort sort = SortUtils.getSortFromList(pageableDto.getSort());
+        org.springframework.data.domain.Pageable pageable = getPageable(pageableDto);
 
         log.info("{}, {}, {}", pageableDto.getSize(), pageableDto.getPage(), pageableDto.getSort());
 
-        org.springframework.data.domain.Sort sort = SortUtils.getSortFromList(pageableDto.getSort());
-        org.springframework.data.domain.Pageable pageable = PageRequest.of(pageableDto.getPage(),
-                pageableDto.getSize(), sort);
 
         Page<Dialog> dialogPage = dialogRepository.findAllByConversationPartner1(ownerId, pageable);
         List<Dialog> dialogs = dialogPage.getContent();
@@ -180,18 +164,7 @@ public class DialogService {
         log.info("Getting messages by user {} with user {}", ownerId, recipientId);
 
         org.springframework.data.domain.Sort sort = SortUtils.getSortFromList(pageableDto.getSort());
-        org.springframework.data.domain.Pageable pageable;
-
-        if (pageableDto.getSize() != null && pageableDto.getPage() != null) {
-            pageable = PageRequest.of(pageableDto.getPage(),
-                    pageableDto.getSize());
-        } else {
-            pageable = PageRequest.of(0, 10);
-        }
-
-
-
-
+        org.springframework.data.domain.Pageable pageable = getPageable(pageableDto);
 
         Page<Message> messagePage = messageRepository.findAllByConversationPartner1(ownerId, pageable);
         List<Message> messages = messagePage.getContent();
@@ -243,5 +216,22 @@ public class DialogService {
         return dialogRepository.findByConversationPartner1AndConversationPartner2(conversationPartner1, conversationPartner2)
                 .orElse(null);
 
+    }
+
+
+    private static org.springframework.data.domain.Pageable getPageable(Pageable pageableDto) {
+        org.springframework.data.domain.Pageable pageable;
+
+        if (pageableDto.getSize() == null && pageableDto.getPage() == null) {
+            pageable = PageRequest.of(0,10);
+        } else if (pageableDto.getSize() == null) {
+            pageable = PageRequest.of(pageableDto.getPage(), 10);
+        } else if (pageableDto.getPage() == null) {
+            pageable = PageRequest.of(0, pageableDto.getSize());
+        } else {
+            pageable = PageRequest.of(pageableDto.getPage(),
+                    pageableDto.getSize());
+        }
+        return pageable;
     }
 }
