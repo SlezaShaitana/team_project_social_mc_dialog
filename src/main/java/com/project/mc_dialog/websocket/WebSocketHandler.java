@@ -58,7 +58,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         log.info("WebSocketHandler: handleTextMessage() startMethod: получен TextMessage: {}", message.getPayload());
-
         UUID uuid = getCurrentUserId(session);
         log.info("Handle new message from " + uuid);
 
@@ -84,6 +83,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        log.info("WebSocketHandler: afterConnectionClosed() startMethod: sessionId: {}, closeStatus: {}",
+                session.getId(), status);
         UUID uuid = getCurrentUserId(session);
         List<WebSocketSession> list = sessionMap.getOrDefault(uuid, new ArrayList<>());
         list.remove(session);
