@@ -166,7 +166,7 @@ public class DialogService {
         org.springframework.data.domain.Sort sort = SortUtils.getSortFromList(pageableDto.getSort());
         org.springframework.data.domain.Pageable pageable = getPageable(pageableDto);
 
-        Page<Message> messagePage = messageRepository.findAllByConversationPartner1(ownerId, pageable);
+        Page<Message> messagePage = messageRepository.findMessages(ownerId, recipientId, pageable);
         List<Message> messages = messagePage.getContent();
         int totalPages = messagePage.getTotalPages();
         long totalElements = messagePage.getTotalElements();
