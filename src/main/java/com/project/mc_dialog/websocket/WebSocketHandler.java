@@ -1,9 +1,12 @@
 package com.project.mc_dialog.websocket;
 
+import com.project.mc_dialog.security.JwtUtils;
 import com.project.mc_dialog.service.DialogService;
+import com.project.mc_dialog.utils.MessageParseUtils;
+import com.project.mc_dialog.web.dto.messageDto.MessageDto;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -11,7 +14,6 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -23,6 +25,7 @@ import java.util.concurrent.ConcurrentMap;
 @Service
 public class WebSocketHandler extends TextWebSocketHandler {
 
+    private final JwtUtils jwtUtils;
     private final DialogService messageService;
 //    private final AuthenticationService authenticationService;
 
@@ -61,13 +64,17 @@ public class WebSocketHandler extends TextWebSocketHandler {
         UUID uuid = getCurrentUserId(session);
         log.info("Handle new message from " + uuid);
 
-//        if (TYPE_MESSAGE.equals(new JSONObject(message.getPayload()).getString("type"))) {
-//            uuid = UUID.fromString(new JSONObject(message.getPayload()).getString("recipientId"));
-//            messageService.handleSocketMessage(message);
-//            log.info("Сервис обработал сообщение и отправил в бд");
-//        }
+        JSONObject messageJSON = new JSONObject(message.getPayload());
+        if (TYPE_MESSAGE.equals(messageJSON.getString("type"))) {
+            uuid = UUID.fromString(messageJSON.getString("recipientId"));
 
-//        SendingList(message, uuid);
+            MessageDto messageDto = MessageParseUtils.parseMessage(message);
+            messageService.createMessage(messageDto);
+            log.info("Сервис обработал сообщение и отправил в бд");
+        }
+
+
+        SendingList(message, uuid);
     }
 
     private void SendingList(TextMessage message, UUID id) throws IOException {
@@ -92,8 +99,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
     }
 
     private UUID getCurrentUserId(WebSocketSession session) {
-        Principal principalSession = session.getPrincipal();
-        String accountIdString = (String) ((UsernamePasswordAuthenticationToken) principalSession).getPrincipal();
-        return UUID.fromString(accountIdString);
+//        Principal principalSession = session.getPrincipal();
+//        String accountIdString = (String) ((UsernamePasswordAuthenticationToken) principalSession).getPrincipal();
+//        return UUID.fromString(accountIdString);
+        String header = session.getHandshakeHeaders().get("Authorization").get(0);
+        String token = header.substring(7);
+
+        return UUID.fromString(jwtUtils.getId(token));
     }
 }
