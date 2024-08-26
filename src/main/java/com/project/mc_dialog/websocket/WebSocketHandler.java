@@ -15,6 +15,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,7 +30,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private final DialogService messageService;
 //    private final AuthenticationService authenticationService;
 
-    ConcurrentMap<UUID, List<WebSocketSession>> sessionMap = new ConcurrentHashMap<>();
+    List<WebSocketSession> webSocketSessions
+            = Collections.synchronizedList(new ArrayList<>());
+    //ConcurrentMap<UUID, List<WebSocketSession>> sessionMap = new ConcurrentHashMap<>();
     public static final String TYPE_NOTIFICATION = "NOTIFICATION";
     public static final String TYPE_MESSAGE = "MESSAGE";
 
@@ -38,30 +41,31 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         log.info("WebSocketHandler: afterConnectionEstablished() startMethod: sessionId: {}, sessionMap: {}",
-                session.getId(), sessionMap);
+                session.getId(), webSocketSessions);
 
-        UUID uuid = getCurrentUserId(session);
+        //UUID uuid = getCurrentUserId(session);
         session.sendMessage(new TextMessage("{ \"connection\": \"established\"}"));
-        List<WebSocketSession> list = sessionMap.getOrDefault(uuid, new ArrayList<>());//поменять на нормальный uuid
+//        List<WebSocketSession> list = sessionMap.getOrDefault(uuid, new ArrayList<>());//поменять на нормальный uuid
+        webSocketSessions.add(session);
 
-        boolean isNew = list.isEmpty();
-        list.add(session);
-        if (isNew) {
-            sessionMap.put(uuid, list);
-        } else {
-            sessionMap.replace(uuid, list);
-        }
+//        boolean isNew = list.isEmpty();
+//        list.add(session);
+//        if (isNew) {
+//            sessionMap.put(uuid, list);
+//        } else {
+//            sessionMap.replace(uuid, list);
+//        }
 
 //не сделано         kafkaMessageService.sendAccountDTO(notificationsMapper.getAccountOnlineDto(uuid, true));
 
         log.info("WebSocketHandler: afterConnectionEstablished(): итоговый для id: {} sessionMap: {}",
-                session.getId(), sessionMap);
+                session.getId(), webSocketSessions);
     }
 
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         log.info("WebSocketHandler: handleTextMessage() startMethod: получен TextMessage: {}", message.getPayload());
-        UUID uuid = getCurrentUserId(session);
+        UUID uuid = null;
         log.info("Handle new message from " + uuid);
 
         JSONObject messageJSON = new JSONObject(message.getPayload());
@@ -74,28 +78,40 @@ public class WebSocketHandler extends TextWebSocketHandler {
         }
 
 
-        SendingList(message, uuid);
+        for (WebSocketSession webSocketSession :
+                webSocketSessions) {
+            if (session == webSocketSession)
+                continue;
+
+            // sendMessage is used to send the message to
+            // the session
+            webSocketSession.sendMessage(message);
+        }
     }
 
     private void SendingList(TextMessage message, UUID id) throws IOException {
         log.info("Session map");
 
         log.info("Sending List. Направить сообщения по веб-сокету получателю - " + id);
-        List<WebSocketSession> sendingList = sessionMap.getOrDefault(id, new ArrayList<>());
-        for (WebSocketSession registerSession : sendingList) {
-            log.info("Отправка сообщения для получателя с номером сессии" + registerSession.getId());
-            registerSession.sendMessage(message);
-        }
+//        List<WebSocketSession> sendingList = sessionMap.getOrDefault(id, new ArrayList<>());
+//        for (WebSocketSession registerSession : sendingList) {
+//            log.info("Отправка сообщения для получателя с номером сессии" + registerSession.getId());
+//            registerSession.sendMessage(message);
+//        }
+
+
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         log.info("WebSocketHandler: afterConnectionClosed() startMethod: sessionId: {}, closeStatus: {}",
                 session.getId(), status);
-        UUID uuid = getCurrentUserId(session);
-        List<WebSocketSession> list = sessionMap.getOrDefault(uuid, new ArrayList<>());
-        list.remove(session);
-        sessionMap.replace(uuid, list);
+        //UUID uuid = getCurrentUserId(session);
+//        List<WebSocketSession> list = sessionMap.getOrDefault(uuid, new ArrayList<>());
+//        list.remove(session);
+//        sessionMap.replace(uuid, list);
+
+        webSocketSessions.remove(session);
     }
 
     private UUID getCurrentUserId(WebSocketSession session) {
