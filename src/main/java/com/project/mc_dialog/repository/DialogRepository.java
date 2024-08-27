@@ -13,7 +13,7 @@ public interface DialogRepository extends JpaRepository<Dialog, UUID> {
 
     Optional<Dialog> findByConversationPartner1AndConversationPartner2(UUID conversationPartner1, UUID conversationPartner2);
 
-    Page<Dialog> findAllByConversationPartner1(UUID conversationPartner1, Pageable pageable);
+    Page<Dialog> findAllByConversationPartner1OrConversationPartner2(UUID conversationPartner1, UUID conversationPartner2, Pageable pageable);
 
     List<Dialog> findAllByConversationPartner1(UUID conversationPartner1);
 }

@@ -1,5 +1,6 @@
 package com.project.mc_dialog.web.dto.messageDto;
 
+import com.project.mc_dialog.model.ReadStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

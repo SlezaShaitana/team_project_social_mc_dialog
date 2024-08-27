@@ -1,7 +1,7 @@
 package com.project.mc_dialog.utils;
 
 import com.project.mc_dialog.web.dto.messageDto.MessageDto;
-import com.project.mc_dialog.web.dto.messageDto.ReadStatus;
+import com.project.mc_dialog.model.ReadStatus;
 import org.json.JSONObject;
 import org.springframework.web.socket.TextMessage;
 

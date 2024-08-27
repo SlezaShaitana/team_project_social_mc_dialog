@@ -1,7 +1,5 @@
-package com.project.mc_dialog.config;
+package com.project.mc_dialog.security;
 
-import com.project.mc_dialog.security.JwtAuthenticationEntryPoint;
-import com.project.mc_dialog.security.JwtTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

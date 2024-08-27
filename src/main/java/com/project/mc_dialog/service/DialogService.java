@@ -13,7 +13,7 @@ import com.project.mc_dialog.web.dto.dialogDto.DialogDto;
 import com.project.mc_dialog.web.dto.dialogDto.PageDialogDto;
 import com.project.mc_dialog.web.dto.messageDto.MessageDto;
 import com.project.mc_dialog.web.dto.messageDto.PageMessageShortDto;
-import com.project.mc_dialog.web.dto.messageDto.ReadStatus;
+import com.project.mc_dialog.model.ReadStatus;
 import com.project.mc_dialog.web.dto.messageDto.UnreadCountDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -88,12 +88,11 @@ public class DialogService {
         UUID ownerId = UUID.fromString(jwtUtils.getId(token));
 
         org.springframework.data.domain.Sort sort = SortUtils.getSortFromList(pageableDto.getSort());
-        org.springframework.data.domain.Pageable pageable = getPageable(pageableDto);
+        org.springframework.data.domain.Pageable pageable = getPageable(pageableDto, sort);
 
         log.info("{}, {}, {}", pageableDto.getSize(), pageableDto.getPage(), pageableDto.getSort());
 
-
-        Page<Dialog> dialogPage = dialogRepository.findAllByConversationPartner1(ownerId, pageable);
+        Page<Dialog> dialogPage = dialogRepository.findAllByConversationPartner1OrConversationPartner2(ownerId, ownerId, pageable);
         List<Dialog> dialogs = dialogPage.getContent();
         int totalPages = dialogPage.getTotalPages();
         long totalElements = dialogPage.getTotalElements();
@@ -164,9 +163,10 @@ public class DialogService {
         log.info("Getting messages by user {} with user {}", ownerId, recipientId);
 
         org.springframework.data.domain.Sort sort = SortUtils.getSortFromList(pageableDto.getSort());
-        org.springframework.data.domain.Pageable pageable = getPageable(pageableDto);
+        org.springframework.data.domain.Pageable pageable = getPageable(pageableDto, sort);
 
-        Page<Message> messagePage = messageRepository.findMessages(ownerId, recipientId, pageable);
+        Page<Message> messagePage = messageRepository.findAllByConversationPartner1AndConversationPartner2OrConversationPartner1AndConversationPartner2(ownerId,
+                recipientId, recipientId, ownerId, pageable);
         List<Message> messages = messagePage.getContent();
         int totalPages = messagePage.getTotalPages();
         long totalElements = messagePage.getTotalElements();
@@ -218,19 +218,18 @@ public class DialogService {
 
     }
 
-
-    private static org.springframework.data.domain.Pageable getPageable(Pageable pageableDto) {
+    private static org.springframework.data.domain.Pageable getPageable(Pageable pageableDto, org.springframework.data.domain.Sort sort) {
         org.springframework.data.domain.Pageable pageable;
 
         if (pageableDto.getSize() == null && pageableDto.getPage() == null) {
-            pageable = PageRequest.of(0,10);
+            pageable = PageRequest.of(0,10, sort);
         } else if (pageableDto.getSize() == null) {
-            pageable = PageRequest.of(pageableDto.getPage(), 10);
+            pageable = PageRequest.of(pageableDto.getPage(), 10, sort);
         } else if (pageableDto.getPage() == null) {
-            pageable = PageRequest.of(0, pageableDto.getSize());
+            pageable = PageRequest.of(0, pageableDto.getSize(), sort);
         } else {
             pageable = PageRequest.of(pageableDto.getPage(),
-                    pageableDto.getSize());
+                    pageableDto.getSize(), sort);
         }
         return pageable;
     }
