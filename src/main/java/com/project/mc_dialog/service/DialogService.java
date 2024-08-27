@@ -1,7 +1,7 @@
 package com.project.mc_dialog.service;
 
 import com.project.mc_dialog.exception.DialogNotFoundException;
-import com.project.mc_dialog.mapper.DialogMapper;
+import com.project.mc_dialog.mapper.Mapper;
 import com.project.mc_dialog.model.Dialog;
 import com.project.mc_dialog.model.Message;
 import com.project.mc_dialog.repository.DialogRepository;
@@ -32,11 +32,11 @@ public class DialogService {
 
     private final DialogRepository dialogRepository;
     private final MessageRepository messageRepository;
-    private final DialogMapper dialogMapper;
+    private final Mapper mapper;
     private final JwtUtils jwtUtils;
 
     public void updateMessageStatus(UUID dialogId) {
-        log.info("Updating message status for dialog {}", dialogId);
+        log.info("DialogService: updateMessageStatus() start method: dialogId - {}", dialogId);
 
         Dialog dialog = getExistingDialog(dialogId);
         List<Message> messages = dialog.getMessages();
@@ -51,7 +51,7 @@ public class DialogService {
     }
 
     public MessageDto createMessage(MessageDto messageDto) {
-        log.info("Creating message: {}", messageDto);
+        log.info("DialogService: createMessage() start method: messageDto - {}", messageDto);
 
         Message newMessage = new Message();
         newMessage.setDeleted(false);
@@ -61,18 +61,18 @@ public class DialogService {
         newMessage.setMessageText(messageDto.getMessageText());
 
         Dialog existingDialog = getExistingDialog(messageDto.getDialogId());
-        existingDialog.setUnreadCount(existingDialog.getUnreadCount() + 1);
+        existingDialog.increaseUnreadCount();
         newMessage.setDialog(existingDialog);
 
-        return dialogMapper.messageToDto(messageRepository.save(newMessage));
+        return mapper.messageToDto(messageRepository.save(newMessage));
     }
 
     public DialogDto createDialog(DialogDto dialogDto) {
-        log.info("Creating dialog: {}", dialogDto);
+        log.info("DialogService: createDialog() start method: dialogDto - {}", dialogDto);
 
         Dialog existingDialog = getExistingDialog(dialogDto.getConversationPartner1(), dialogDto.getConversationPartner2());
         if (existingDialog != null){
-            return dialogMapper.dialogToDto(existingDialog);
+            return mapper.dialogToDto(existingDialog);
         }
         Dialog newDialog = new Dialog();
         newDialog.setDeleted(false);
@@ -80,17 +80,16 @@ public class DialogService {
         newDialog.setConversationPartner1(dialogDto.getConversationPartner1());
         newDialog.setConversationPartner2(dialogDto.getConversationPartner2());
 
-        return dialogMapper.dialogToDto(dialogRepository.save(newDialog));
+        return mapper.dialogToDto(dialogRepository.save(newDialog));
     }
 
     public PageDialogDto getDialogs(String token, Pageable pageableDto) {
-        log.info("Getting user dialogs");
+        log.info("DialogService: getDialogs start method: token - {}, pageableDto - {}",
+                token, pageableDto);
         UUID ownerId = UUID.fromString(jwtUtils.getId(token));
 
         org.springframework.data.domain.Sort sort = SortUtils.getSortFromList(pageableDto.getSort());
         org.springframework.data.domain.Pageable pageable = getPageable(pageableDto, sort);
-
-        log.info("{}, {}, {}", pageableDto.getSize(), pageableDto.getPage(), pageableDto.getSort());
 
         Page<Dialog> dialogPage = dialogRepository.findAllByConversationPartner1OrConversationPartner2(ownerId, ownerId, pageable);
         List<Dialog> dialogs = dialogPage.getContent();
@@ -125,17 +124,17 @@ public class DialogService {
                 .first(isFirst)
                 .last(isLast)
                 .size(size)
-                .content(dialogMapper.dialogListToDialogDtoList(dialogs))
+                .content(mapper.dialogListToDialogDtoList(dialogs))
                 .number(number)
                 .empty(empty)
                 .build();
     }
 
     public UnreadCountDto getUnreadCount(String token) {
-        UUID ownerId = UUID.fromString(jwtUtils.getId(token));
-        log.info("Getting unread count messages by user {}", ownerId);
+        log.info("DialogService: getUnreadCount start method: token - {}", token);
 
-        List<Dialog> userDialogs = dialogRepository.findAllByConversationPartner1(ownerId);
+        UUID ownerId = UUID.fromString(jwtUtils.getId(token));
+        List<Dialog> userDialogs = dialogRepository.findAllByConversationPartner1OrConversationPartner2(ownerId, ownerId);
         if (userDialogs.isEmpty()) {
             return new UnreadCountDto(0);
         }
@@ -144,12 +143,13 @@ public class DialogService {
     }
 
     public DialogDto getDialog(String token, UUID recipientId) {
-        UUID ownerId = UUID.fromString(jwtUtils.getId(token));
-        log.info("Getting dialog by user {} with user {}", ownerId, recipientId);
+        log.info("DialogService: getDialog start method: token - {}, recipientId - {}",
+                token, recipientId);
 
+        UUID ownerId = UUID.fromString(jwtUtils.getId(token));
         Dialog exsitingDialog = getExistingDialog(ownerId, recipientId);
         if (exsitingDialog != null) {
-            return dialogMapper.dialogToDto(exsitingDialog);
+            return mapper.dialogToDto(exsitingDialog);
         } else {
             return createDialog(DialogDto.builder()
                     .conversationPartner1(ownerId)
@@ -159,8 +159,10 @@ public class DialogService {
     }
 
     public PageMessageShortDto getMessages(String token, UUID recipientId, Pageable pageableDto) {
+        log.info("DialogService: getMessages start method: token - {}, recipientId - {}, pageableDto - {}",
+                token, recipientId, pageableDto);
+
         UUID ownerId = UUID.fromString(jwtUtils.getId(token));
-        log.info("Getting messages by user {} with user {}", ownerId, recipientId);
 
         org.springframework.data.domain.Sort sort = SortUtils.getSortFromList(pageableDto.getSort());
         org.springframework.data.domain.Pageable pageable = getPageable(pageableDto, sort);
@@ -199,23 +201,28 @@ public class DialogService {
                 .first(isFirst)
                 .last(isLast)
                 .size(size)
-                .content(dialogMapper.messageListToMessageShortDtoList(messages))
+                .content(mapper.messageListToMessageShortDtoList(messages))
                 .number(number)
                 .empty(empty)
                 .build();
     }
 
     private Dialog getExistingDialog(UUID dialogId) {
-        log.info("Get existing dialog by dialogId {}", dialogId);
+        log.info("DialogService: getExistingDialog start method: dialogId - {}", dialogId);
+
         return dialogRepository.findById(dialogId)
                 .orElseThrow(() -> new DialogNotFoundException(MessageFormat.format("Dialog with id {0} not found", dialogId)));
     }
 
     private Dialog getExistingDialog(UUID conversationPartner1, UUID conversationPartner2){
-        log.info("Get existing dialog by users ids {}, {}", conversationPartner1, conversationPartner2);
-        return dialogRepository.findByConversationPartner1AndConversationPartner2(conversationPartner1, conversationPartner2)
-                .orElse(null);
+        log.info("DialogService: getExistingDialog start method: conversationPartner1 - {}, conversationPartner2 - {}",
+                conversationPartner1, conversationPartner2);
 
+        return dialogRepository.findByConversationPartner1AndConversationPartner2OrConversationPartner1AndConversationPartner2(conversationPartner1,
+                        conversationPartner2,
+                        conversationPartner2,
+                        conversationPartner1)
+                .orElse(null);
     }
 
     private static org.springframework.data.domain.Pageable getPageable(Pageable pageableDto, org.springframework.data.domain.Sort sort) {

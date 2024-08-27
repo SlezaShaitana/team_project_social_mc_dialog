@@ -36,4 +36,8 @@ public class Dialog {
 
     @OneToMany(mappedBy = "dialog", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Message> messages = new ArrayList<>();
+
+    public void increaseUnreadCount() {
+        unreadCount++;
+    }
 }

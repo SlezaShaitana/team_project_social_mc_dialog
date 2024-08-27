@@ -3,7 +3,6 @@ package com.project.mc_dialog.security;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +10,6 @@ import javax.crypto.SecretKey;
 import java.util.List;
 
 @Component
-@Slf4j
 public class JwtUtils {
 
     @Value("${app.jwt.secret}")
