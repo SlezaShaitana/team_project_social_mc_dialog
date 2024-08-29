@@ -33,36 +33,35 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        try {
-            String token = getToken(request);
-            if (token != null && jwtValidation.validateToken(token)) {
 
-                String email = jwtUtils.getEmail(token);
-                List<String> roles = jwtUtils.getRoles(token);
+        String token = getToken(request);
+        if (token != null && jwtValidation.validateToken(token)) {
 
-                Cookie[] cookies = request.getCookies();
-                if (cookies != null) {
-                    for (Cookie cookie : cookies) {
-                        log.info("{}: {}", cookie.getName(), cookie.getValue());
-                    }
-                }
-                log.info("Cookies: {}", (Object) cookies);
+            String email = jwtUtils.getEmail(token);
+            List<String> roles = jwtUtils.getRoles(token);
 
-                Collection<? extends GrantedAuthority> authorities = roles.stream()
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+            Collection<? extends GrantedAuthority> authorities = roles.stream()
+                    .map(SimpleGrantedAuthority::new)
+                    .collect(Collectors.toList());
 
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        email, null, authorities
-                );
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                    email, null, authorities
+            );
 
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-        } catch (Exception e) {
-            log.info("JWT token validation failed");
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
+
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                log.info("{}: {}", cookie.getName(), cookie.getValue());
+            }
+        }
+        log.info("Cookies: {}", (Object) cookies);
+
+        log.info("JWT token validation failed");
         filterChain.doFilter(request, response);
     }
 
