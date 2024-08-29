@@ -3,6 +3,7 @@ package com.project.mc_dialog.security;
 import com.project.mc_dialog.feign.JwtValidation;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,14 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
                 String email = jwtUtils.getEmail(token);
                 List<String> roles = jwtUtils.getRoles(token);
+
+                Cookie[] cookies = request.getCookies();
+                if (cookies != null) {
+                    for (Cookie cookie : cookies) {
+                        log.info("{}: {}", cookie.getName(), cookie.getValue());
+                    }
+                }
+                log.info("Cookies: {}", (Object) cookies);
 
                 Collection<? extends GrantedAuthority> authorities = roles.stream()
                         .map(SimpleGrantedAuthority::new)
