@@ -30,6 +30,7 @@ import java.util.UUID;
 @Slf4j
 public class DialogService {
 
+    private final AuthenticationService authenticationService;
     private final DialogRepository dialogRepository;
     private final MessageRepository messageRepository;
     private final Mapper mapper;
@@ -133,7 +134,7 @@ public class DialogService {
     public UnreadCountDto getUnreadCount(String token) {
         log.info("DialogService: getUnreadCount start method: token - {}", token);
 
-        UUID ownerId = UUID.fromString(jwtUtils.getId(token));
+        UUID ownerId = authenticationService.getCurrentUserId();
         List<Dialog> userDialogs = dialogRepository.findAllByConversationPartner1OrConversationPartner2(ownerId, ownerId);
         if (userDialogs.isEmpty()) {
             return new UnreadCountDto(0);

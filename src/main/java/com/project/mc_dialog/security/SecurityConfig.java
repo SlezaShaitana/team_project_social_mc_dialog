@@ -24,9 +24,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/streaming/ws/**").permitAll()
-                        .anyRequest().authenticated()
+        http.authorizeHttpRequests(auth -> auth.anyRequest().authenticated()
                 )
                 .exceptionHandling(configurer -> configurer.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .csrf(AbstractHttpConfigurer::disable)
