@@ -53,15 +53,16 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                log.info("{}: {}", cookie.getName(), cookie.getValue());
+        if (request.getRequestURI().equals("/api/v1/streaming/ws")) {
+            final Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    log.info("{}: {}", cookie.getName(), cookie.getValue());
+                }
             }
         }
-        log.info("Cookies: {}", (Object) cookies);
 
-        log.info("JWT token validation failed");
+        //log.info("JWT token validation failed");
         filterChain.doFilter(request, response);
     }
 
