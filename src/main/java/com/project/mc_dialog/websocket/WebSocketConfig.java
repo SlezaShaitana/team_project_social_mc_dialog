@@ -1,7 +1,7 @@
 package com.project.mc_dialog.websocket;
 
-import com.project.mc_dialog.security.JwtUtils;
-import com.project.mc_dialog.service.DialogService;
+import com.project.mc_dialog.service.AuthenticationService;
+import com.project.mc_dialog.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,12 +14,12 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketConfigurer {
 
-    private final DialogService messageService;
-    private final JwtUtils jwtUtils;
+    private final MessageService messageService;
+    private final AuthenticationService authenticationService;
 
     @Bean
     public WebSocketHandler getWebSocketHandler() {
-        return new WebSocketHandler(jwtUtils, messageService);
+        return new WebSocketHandler(messageService, authenticationService);
     }
 
     @Override
