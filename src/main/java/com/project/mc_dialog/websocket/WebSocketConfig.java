@@ -15,11 +15,10 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 public class WebSocketConfig implements WebSocketConfigurer {
 
     private final MessageService messageService;
-    private final AuthenticationService authenticationService;
 
     @Bean
     public WebSocketHandler getWebSocketHandler() {
-        return new WebSocketHandler(messageService, authenticationService);
+        return new WebSocketHandler(messageService);
     }
 
     @Override
