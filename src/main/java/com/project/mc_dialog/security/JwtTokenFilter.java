@@ -9,12 +9,18 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Component
@@ -30,32 +36,41 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         String account_id = null;
         String token = null;
+        List<String> roles = new ArrayList<>();
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = getToken(authHeader);
             if (jwtValidation.validateToken(token)){
+                log.info("JWT Token is valid");
                 account_id = jwtUtils.getId(token);
+                roles = jwtUtils.getRoles(token);
             } else {
-                token = null;
                 log.info("JWT token validation failed");
+                token = null;
             }
         }
 
         if (request.getRequestURI().equals("/api/v1/streaming/ws")) {
             final Cookie[] cookies = request.getCookies();
+            roles = List.of("USER");
+
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
                     if (cookie.getName().equals("jwt")) {
                         account_id = jwtUtils.getId(cookie.getValue());
-                        token = cookie.getValue();
+                        roles = List.of("USER");
                     }
                 }
             }
         }
 
+        Collection<? extends GrantedAuthority> authorities = roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .toList();
+
         if (account_id != null && token != null) {
             UsernamePasswordAuthenticationToken springContextToken;
-            springContextToken = new UsernamePasswordAuthenticationToken(account_id, token);
+            springContextToken = new UsernamePasswordAuthenticationToken(account_id, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(springContextToken);
         }
 
