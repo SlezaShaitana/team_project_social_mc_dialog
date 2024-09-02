@@ -34,7 +34,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
         String account_id = null;
-        List<String> roles = null;
+        List<String> roles = new ArrayList<>();
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = getToken(authHeader);
@@ -49,7 +49,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         if (request.getRequestURI().equals("/api/v1/streaming/ws")) {
             final Cookie[] cookies = request.getCookies();
-
+            account_id = "123";
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
                     if (cookie.getName().equals("jwt")) {
@@ -64,7 +64,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 .map(SimpleGrantedAuthority::new)
                 .toList();
 
-        if (account_id != null && roles != null) {
+        if (account_id != null && !roles.isEmpty()) {
             UsernamePasswordAuthenticationToken springContextToken;
             springContextToken = new UsernamePasswordAuthenticationToken(account_id, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(springContextToken);
