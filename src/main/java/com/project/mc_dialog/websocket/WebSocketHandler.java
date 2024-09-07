@@ -1,6 +1,5 @@
 package com.project.mc_dialog.websocket;
 
-import com.project.mc_dialog.service.AuthenticationService;
 import com.project.mc_dialog.service.MessageService;
 import com.project.mc_dialog.utils.MessageParseUtils;
 import com.project.mc_dialog.web.dto.messageDto.MessageDto;
