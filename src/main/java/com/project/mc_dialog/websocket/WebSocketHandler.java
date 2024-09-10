@@ -1,5 +1,6 @@
 package com.project.mc_dialog.websocket;
 
+import com.project.mc_dialog.kafka.KafkaProducer;
 import com.project.mc_dialog.service.MessageService;
 import com.project.mc_dialog.utils.MessageParseUtils;
 import com.project.mc_dialog.web.dto.messageDto.MessageDto;
@@ -29,11 +30,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     private final MessageService messageService;
 
-    ConcurrentMap<UUID, List<WebSocketSession>> sessionMap= new ConcurrentHashMap<>();
-    public static final String TYPE_NOTIFICATION = "NOTIFICATION";
-    public static final String TYPE_MESSAGE = "MESSAGE";
+    private final ConcurrentMap<UUID, List<WebSocketSession>> sessionMap= new ConcurrentHashMap<>();
 
-//    private KafkaDialogServiceImpl kafkaMessageService;
+    public static final String TYPE_MESSAGE = "MESSAGE";
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -50,8 +49,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
         } else {
             sessionMap.replace(uuid, list);
         }
-
-//не сделано         kafkaMessageService.sendAccountDTO(notificationsMapper.getAccountOnlineDto(uuid, true));
 
         log.info("WebSocketHandler: afterConnectionEstablished(): итоговый для id: {} sessionMap: {}",
                 session.getId(), sessionMap);

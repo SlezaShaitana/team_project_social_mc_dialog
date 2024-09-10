@@ -1,5 +1,9 @@
 package com.project.mc_dialog.service;
 
+import com.project.mc_dialog.kafka.KafkaProducer;
+import com.project.mc_dialog.kafka.dto.MicroServiceName;
+import com.project.mc_dialog.kafka.dto.NotificationEvent;
+import com.project.mc_dialog.kafka.dto.NotificationType;
 import com.project.mc_dialog.mapper.Mapper;
 import com.project.mc_dialog.model.Dialog;
 import com.project.mc_dialog.model.Message;
@@ -17,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,6 +34,7 @@ public class MessageService {
     private final DialogService dialogService;
     private final AuthenticationService authenticationService;
     private final Mapper mapper;
+    private final KafkaProducer kafkaProducer;
 
     public void updateMessageStatus(UUID dialogId) {
         log.info("DialogService: updateMessageStatus() start method: dialogId - {}", dialogId);
@@ -60,6 +66,20 @@ public class MessageService {
         newMessage.setDialog(existingDialog);
 
         messageRepository.save(newMessage);
+        log.info("DialogService: createMessage() end method: message created");
+
+        NotificationEvent event = NotificationEvent.builder()
+                .authorId(messageDto.getConversationPartner1())
+                .receiverId(messageDto.getConversationPartner2())
+                .content(messageDto.getMessageText())
+                .notificationType(NotificationType.MESSAGE)
+                .sentTime(LocalDateTime.now())
+                .serviceName(MicroServiceName.DIALOG)
+                .eventId(newMessage.getId())
+                .isReaded(false)
+                .build();
+        kafkaProducer.sendNotificationMessage(event);
+        log.info("DialogService: createMessage() end method: message send to notification microservice");
     }
 
     public PageMessageShortDto getMessages(UUID recipientId, Pageable pageableDto) {
