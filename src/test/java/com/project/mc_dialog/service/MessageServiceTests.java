@@ -1,18 +1,19 @@
-package com.project.mc_dialog;
+package com.project.mc_dialog.service;
 
+import com.project.mc_dialog.kafka.KafkaProducer;
 import com.project.mc_dialog.mapper.Mapper;
 import com.project.mc_dialog.model.Dialog;
 import com.project.mc_dialog.model.Message;
 import com.project.mc_dialog.model.ReadStatus;
 import com.project.mc_dialog.repository.MessageRepository;
-import com.project.mc_dialog.service.AuthenticationService;
-import com.project.mc_dialog.service.DialogService;
-import com.project.mc_dialog.service.MessageService;
+import com.project.mc_dialog.testContainer.PostgresContainer;
 import com.project.mc_dialog.web.dto.Pageable;
 import com.project.mc_dialog.web.dto.PageableObject;
 import com.project.mc_dialog.web.dto.Sort;
 import com.project.mc_dialog.web.dto.messageDto.MessageDto;
 import com.project.mc_dialog.web.dto.messageDto.PageMessageShortDto;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +23,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -32,7 +35,10 @@ import java.util.List;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
-public class MessageServiceTests {
+@ActiveProfiles("test")
+@TestPropertySource(locations = "classpath:application-test.yaml")
+@DisplayName("Tests for MessageService")
+public class MessageServiceTests  extends PostgresContainer {
 
     @Mock
     private MessageRepository messageRepository;
@@ -44,10 +50,23 @@ public class MessageServiceTests {
     private AuthenticationService authenticationService;
 
     @Mock
+    private KafkaProducer kafkaProducer;
+
+    @Mock
     private Mapper mapper;
 
     @InjectMocks
     private MessageService messageService;
+
+    @BeforeAll
+    public static void beforeAll() {
+        postgres.start();
+    }
+
+    @AfterAll
+    public static void afterAll() {
+        postgres.stop();
+    }
 
     @Test
     @DisplayName("Test updateMessageStatus")

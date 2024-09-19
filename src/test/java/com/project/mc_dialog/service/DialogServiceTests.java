@@ -1,17 +1,18 @@
-package com.project.mc_dialog;
+package com.project.mc_dialog.service;
 
 import com.project.mc_dialog.exception.DialogNotFoundException;
 import com.project.mc_dialog.mapper.Mapper;
 import com.project.mc_dialog.model.Dialog;
 import com.project.mc_dialog.repository.DialogRepository;
-import com.project.mc_dialog.service.AuthenticationService;
-import com.project.mc_dialog.service.DialogService;
+import com.project.mc_dialog.testContainer.PostgresContainer;
 import com.project.mc_dialog.web.dto.Pageable;
 import com.project.mc_dialog.web.dto.PageableObject;
 import com.project.mc_dialog.web.dto.Sort;
 import com.project.mc_dialog.web.dto.dialogDto.DialogDto;
 import com.project.mc_dialog.web.dto.dialogDto.PageDialogDto;
 import com.project.mc_dialog.web.dto.messageDto.UnreadCountDto;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +24,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +33,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
-public class DialogServiceTests {
+@ActiveProfiles("test")
+@TestPropertySource(locations = "classpath:application-test.yaml")
+@DisplayName("Tests for DialogService")
+public class DialogServiceTests extends PostgresContainer {
 
     @Mock
     private Mapper mapper;
@@ -43,6 +49,16 @@ public class DialogServiceTests {
 
     @InjectMocks
     private DialogService dialogService;
+
+    @BeforeAll
+    public static void beforeAll() {
+        postgres.start();
+    }
+
+    @AfterAll
+    public static void afterAll() {
+        postgres.stop();
+    }
 
     @Test
     @DisplayName("Test createDialog")

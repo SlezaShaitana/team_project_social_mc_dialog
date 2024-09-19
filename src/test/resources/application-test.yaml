@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: mc-dialog
+
+  jpa:
+    generate-ddl: false
+    open-in-view: true
+
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+
+server:
+  port: 8088
+
+app:
+  kafka:
+    bootstrap-servers: 79.174.80.200:9092
+    kafkaMessageNotificationTopic: "notification-topic"
+
+eureka:
+  client:
+    enabled: false
